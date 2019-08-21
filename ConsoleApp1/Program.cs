@@ -79,8 +79,8 @@ namespace BMPHIDE
 			A.VerifySignature(m3, m4);
 		}
 
-		// Token: 0x0600000E RID: 14 RVA: 0x00002708 File Offset: 0x00002708
-		public static byte a(byte b, int r)
+        // Token: 0x0600000E RID: 14 RVA: 0x00002708 File Offset: 0x00002708
+        public static byte a(byte b, int r)
 		{
 			return (byte)(((int)b + r ^ r) & 255);
 		}
@@ -131,8 +131,7 @@ namespace BMPHIDE
 		{
 			for (int i = 0; i < 8; i++)
 			{
-				bool flag = (b >> i & 1) == (k >> i & 1);
-				if (flag)
+				if ((b >> i & 1) == (k >> i & 1))
 				{
 					b = (byte)((int)b & ~(1 << i) & 255);
 				}
@@ -449,33 +448,34 @@ namespace BMPHIDE
 			}
 			return array;
 		}
+        // Token: 0x06000016 RID: 22 RVA: 0x000029AC File Offset: 0x000029AC
 
-		// Token: 0x06000016 RID: 22 RVA: 0x000029AC File Offset: 0x000029AC
-		public static void i(Bitmap bm, byte[] data)
-		{
-			int num = Program.j(103);
-			for (int i = Program.j(103); i < bm.Width; i++)
-			{
-				for (int j = Program.j(103); j < bm.Height; j++)
-				{
-					bool flag = num > data.Length - Program.j(231);
-					if (flag)
-					{
-						break;
-					}
-					Color pixel = bm.GetPixel(i, j);
-					int red = ((int)pixel.R & Program.j(27)) | ((int)data[num] & Program.j(228));
-					int green = ((int)pixel.G & Program.j(27)) | (data[num] >> Program.j(230) & Program.j(228));
-					int blue = ((int)pixel.B & Program.j(25)) | (data[num] >> Program.j(100) & Program.j(230));
-					Color color = Color.FromArgb(Program.j(103), red, green, blue);
-					bm.SetPixel(i, j, color);
-					num += Program.j(231);
-				}
-			}
-		}
+        public static void i(Bitmap bm, byte[] data)
+        {
+            int num = 0;
+            for (int i = 0; i < bm.Width; i++)
+            {
+                for (int j = 0; j < bm.Height; j++)
+                {
+                    bool flag = num > data.Length - 1;
+                    if (flag)
+                    {
+                        break;
+                    }
+                    Color pixel = bm.GetPixel(i, j);
+                    int red = (pixel.R & 248) | (data[num] & 7); //前五位  后三位   0-2
+                    int green = (pixel.G & 248) | (data[num] >> 3 & 7);  //3-5
+                    int blue = (pixel.B & 252) | (data[num] >> 6 & 3); // 6-7
+                    Color color = Color.FromArgb(0, red, green, blue);
+                    bm.SetPixel(i, j, color);
+                    num += 1;
+                }
+            }
+        }
+        
 
-		// Token: 0x06000017 RID: 23 RVA: 0x00002AD8 File Offset: 0x00002AD8
-		public static int j(byte z)
+        // Token: 0x06000017 RID: 23 RVA: 0x00002AD8 File Offset: 0x00002AD8
+        public static int j(byte z)
 		{
 			byte b = 5;
 			uint num = 0u;
@@ -483,16 +483,14 @@ namespace BMPHIDE
 			byte[] bytes = new byte[8];
 			for (;;)
 			{
-				bool flag = b == 1;
-				if (flag)
+				if (b == 1)
 				{
 					num += 4u;
 					b += 2;
 				}
 				else
 				{
-					bool flag2 = b == 2;
-					if (flag2)
+					if (b == 2)
 					{
 						num = (uint)((ulong)num * (ulong)((long)Program.yy));
 						b += 8;
@@ -507,45 +505,39 @@ namespace BMPHIDE
 						}
 						else
 						{
-							bool flag4 = b == 4;
-							if (flag4)
+							if (b == 4)
 							{
 								z = Program.b(z, 1);
 								b += 2;
 							}
 							else
 							{
-								bool flag5 = b == 5;
-								if (flag5)
+								if (b == 5)
 								{
 									num = Convert.ToUInt32(Program.ww, 16);
 									b -= 3;
 								}
 								else
 								{
-									bool flag6 = b == 6;
-									if (flag6)
+									if (b == 6)
 									{
 										break;
 									}
-									bool flag7 = b == 7;
-									if (flag7)
+									if (b == 7)
 									{
 										num += Convert.ToUInt32(value);
 										b -= 6;
 									}
 									else
 									{
-										bool flag8 = b == 10;
-										if (flag8)
+										if (b == 10)
 										{
 											bytes = Convert.FromBase64String(Program.zz);
 											b += 4;
 										}
 										else
 										{
-											bool flag9 = b == 14;
-											if (flag9)
+											if (b == 14)
 											{
 												value = Encoding.Default.GetString(bytes);
 												b -= 7;
@@ -561,23 +553,46 @@ namespace BMPHIDE
 			return (int)Program.e(z, (byte)num);
 		}
 
-		// Token: 0x06000018 RID: 24 RVA: 0x00002C18 File Offset: 0x00002C18
-		private static void Main(string[] args)
-		{
-			Program.Init();
-			Program.yy += 18;
-			string filename = "image1.bmp";
-			string fullPath = Path.GetFullPath("1.jpg");
-			string fullPath2 = Path.GetFullPath("Message.txt");
-			byte[] data = File.ReadAllBytes(fullPath2);
-			Bitmap bitmap = new Bitmap(fullPath);
-			byte[] data2 = Program.h(data);
-			Program.i(bitmap, data2);
-			bitmap.Save(filename);
-		}
+        // Token: 0x06000018 RID: 24 RVA: 0x00002C18 File Offset: 0x00002C18
+        private static void Main(string[] args)
+        {
 
-		// Token: 0x04000008 RID: 8
-		public static int yy = 20;
+            Program.MyInit();
+            Program.yy += 18;
+
+            MyMain();
+
+            //string filename = "image1.bmp";
+            //string fullPath = Path.GetFullPath("1.jpg");
+            //string fullPath2 = Path.GetFullPath("Message.txt");
+            //byte[] data = File.ReadAllBytes(fullPath2);
+            //Bitmap bitmap = new Bitmap(fullPath);
+            //byte[] data2 = Program.h(data);
+            //Program.i(bitmap, data2);
+            //bitmap.Save(filename);
+        }
+        private static void MyMain()
+        {
+            string filename = "1.bmp";
+            string fullPath3 = Path.GetFullPath(filename);
+            byte[] data = File.ReadAllBytes(fullPath3);
+            Bitmap bitmap = new Bitmap(fullPath3);
+            byte[] data2 = MyA.i(bitmap,data);
+            data2 = MyA.Myh2(data2);
+            File.WriteAllBytes("1.bin",data2);
+        }
+        // Token: 0x0600000D RID: 13 RVA: 0x00002568 File Offset: 0x00002568
+        private static void MyInit()
+        {
+            Program.yy *= 136;
+            Program.ww += "14";
+            Program.ww += "82";
+            Program.zz = "MzQxOTk=";
+        }
+
+
+        // Token: 0x04000008 RID: 8
+        public static int yy = 20;
 
 		// Token: 0x04000009 RID: 9
 		public static string ww = "1F7D";
